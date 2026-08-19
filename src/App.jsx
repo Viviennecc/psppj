@@ -42,7 +42,8 @@ function App() {
   };
 
   return (
-    <Router>
+    /* ADDED BASENAME HERE */
+    <Router basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* If logged in, "/" sends you to dashboard. If not, show Login */}
         <Route
