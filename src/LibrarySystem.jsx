@@ -6,6 +6,7 @@ import LibAppearance from "./LibAppearance";
 import BookDetailsModal from "./components/BookDetailsModal";
 import initialData from "./data/books.json";
 import "./LibrarySystem.css";
+import { useNavigate } from "react-router-dom";
 
 // Image compression helper to stay under 5MB LocalStorage limit
 const compressImage = (base64Str, maxWidth = 1000) => {
