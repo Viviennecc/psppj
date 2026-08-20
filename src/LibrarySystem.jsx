@@ -306,7 +306,7 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
             </button>
             <button
               className="lib-nav-item"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => navigate("/dashboard")}
             >
               Dashboard
             </button>
