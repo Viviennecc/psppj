@@ -46,7 +46,7 @@ const Dashboard = ({ userName: propUserName, onLogout }) => {
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  // Initialize User Data
+  // Inside Dashboard.jsx:
   useEffect(() => {
     if (!propUserName) return;
     const initData = async () => {
@@ -59,7 +59,6 @@ const Dashboard = ({ userName: propUserName, onLogout }) => {
           if (savedSettings.textColor) setTextColor(savedSettings.textColor);
           if (savedSettings.textSize) setTextSize(savedSettings.textSize);
         } else {
-          // Fallback to legacy storage if localforage is empty
           const dbBg = await getFromIndexedDB(`bg_${propUserName}`);
           if (dbBg) setBackground(dbBg);
 
@@ -81,8 +80,10 @@ const Dashboard = ({ userName: propUserName, onLogout }) => {
         console.error("Dashboard init error:", err);
       }
     };
+
     initData();
-  }, [propUserName]);
+    // Add 'location' here to force data reinvalidation on route changes
+  }, [propUserName, location]);
 
   // Clock Update
   useEffect(() => {
