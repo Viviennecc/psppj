@@ -5,7 +5,6 @@ export default defineConfig({
   plugins: [react()],
   base: "/psppj/", // 👈 Added base path for GitHub Pages deployment
   server: {
-    port: 3000,
     proxy: {
       "/hko-api": {
         // Point to the base directory of the API
