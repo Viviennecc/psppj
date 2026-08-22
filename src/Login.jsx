@@ -61,11 +61,13 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    
+
     // Real-time check for login form login name
     if (id === "loginName") {
       if (value && !validateEnglishOnly(value)) {
-        setLoginFormError("Login name can only use English letters, numbers, and symbols (_, ., -).");
+        setLoginFormError(
+          "Login name can only use English letters, numbers, and symbols (_, ., -).",
+        );
       } else {
         setLoginFormError("");
       }
@@ -283,8 +285,8 @@ const Login = ({ onLoginSuccess }) => {
           </div>
 
           <div className="button-stack">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-login"
               disabled={!!loginFormError}
             >
@@ -324,11 +326,11 @@ const Login = ({ onLoginSuccess }) => {
                   value={regFormData.loginName}
                   onChange={(e) => {
                     const value = e.target.value;
-                    
+
                     // Check if user typed non-English characters and update error state immediately
                     if (value && !validateEnglishOnly(value)) {
                       setLoginNameError(
-                        "Login name can only use English letters, numbers, and symbols (_, ., -)."
+                        "Login name can only use English letters, numbers, and symbols (_, ., -).",
                       );
                     } else {
                       setLoginNameError("");
