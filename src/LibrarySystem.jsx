@@ -7,8 +7,8 @@ import BookDetailsModal from "./components/BookDetailsModal";
 import initialData from "./data/books.json";
 import { useNavigate } from "react-router-dom";
 import "./LibrarySystem.css";
+import { Link } from "react-router-dom";
 
-const navigate = useNavigate();
 // Image compression helper to stay under 5MB LocalStorage limit
 const compressImage = (base64Str, maxWidth = 1000) => {
   return new Promise((resolve) => {
@@ -25,7 +25,10 @@ const compressImage = (base64Str, maxWidth = 1000) => {
     };
   });
 };
-//abc
+// Inside your LibrarySystem component UI layout:
+<Link to="/dashboard" className="your-dashboard-button-class">
+  Dashboard
+</Link>;
 const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
   // --- Initialize Hooks ---
   const navigate = useNavigate();
