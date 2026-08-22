@@ -325,10 +325,16 @@ const Login = ({ onLoginSuccess }) => {
                   id="loginName"
                   value={regFormData.loginName}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const originalValue = e.target.value;
 
-                    // Check if user typed non-English characters and update error state immediately
-                    if (value && !validateEnglishOnly(value)) {
+                    // 1. Remove any character that is NOT an English letter, number, _, ., or -
+                    const cleanedValue = originalValue.replace(
+                      /[^a-zA-Z0-9_.-]/g,
+                      "",
+                    );
+
+                    // 2. If the user tried to type an invalid character, show the error
+                    if (originalValue !== cleanedValue) {
                       setLoginNameError(
                         "Login name can only use English letters, numbers, and symbols (_, ., -).",
                       );
@@ -336,6 +342,10 @@ const Login = ({ onLoginSuccess }) => {
                       setLoginNameError("");
                     }
 
+                    // 3. Force the input value to only be the clean, safe text
+                    e.target.value = cleanedValue;
+
+                    // 4. Pass the cleaned input event to your main form handler
                     handleRegChange(e);
                   }}
                   className={`form-input ${loginNameError ? "input-error" : ""}`}
