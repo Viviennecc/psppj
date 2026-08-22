@@ -8,6 +8,7 @@ import initialData from "./data/books.json";
 import { useNavigate } from "react-router-dom";
 import "./LibrarySystem.css";
 
+const navigate = useNavigate();
 // Image compression helper to stay under 5MB LocalStorage limit
 const compressImage = (base64Str, maxWidth = 1000) => {
   return new Promise((resolve) => {
