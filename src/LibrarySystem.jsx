@@ -310,7 +310,7 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
             </button>
             <button
               className="lib-nav-item"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/psppj/dashboard")}
             >
               Dashboard
             </button>
