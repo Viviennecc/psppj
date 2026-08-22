@@ -10,7 +10,10 @@ const Login = ({ onLoginSuccess }) => {
   const [error, setError] = useState("");
   const [showRegister, setShowRegister] = useState(false);
 
-  // Validation States
+  // Validation States for Login Form
+  const [loginFormError, setLoginFormError] = useState("");
+
+  // Validation States for Registration Form
   const [passwordError, setPasswordError] = useState("");
   const [loginNameError, setLoginNameError] = useState("");
 
@@ -23,6 +26,12 @@ const Login = ({ onLoginSuccess }) => {
   });
 
   // --- Validation Helpers ---
+
+  const validateEnglishOnly = (text) => {
+    // Allows English letters, numbers, underscores, periods, and hyphens
+    const regex = /^[A-Za-z0-9_.-]+$/;
+    return regex.test(text);
+  };
 
   const validatePassword = (password) => {
     const regex =
@@ -52,15 +61,29 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    
+    // Real-time check for login form login name
+    if (id === "loginName") {
+      if (value && !validateEnglishOnly(value)) {
+        setLoginFormError("Login name can only use English letters, numbers, and symbols (_, ., -).");
+      } else {
+        setLoginFormError("");
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleRegChange = (e) => {
     const { id, value } = e.target;
 
-    // Real-time Login Name check
+    // Real-time Login Name check for registration
     if (id === "loginName") {
-      if (value && checkLoginNameExists(value)) {
+      if (value && !validateEnglishOnly(value)) {
+        setLoginNameError(
+          "Login name can only use English letters, numbers, and symbols (_, ., -).",
+        );
+      } else if (value && checkLoginNameExists(value)) {
         setLoginNameError("This login name is already in use.");
       } else {
         setLoginNameError("");
@@ -84,6 +107,12 @@ const Login = ({ onLoginSuccess }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!validateEnglishOnly(formData.loginName)) {
+      setLoginFormError("Login name must use English characters only.");
+      return;
+    }
+
     try {
       const rawUsers = localStorage.getItem("users");
       const users = JSON.parse(rawUsers || "[]");
@@ -117,6 +146,11 @@ const Login = ({ onLoginSuccess }) => {
   const handleForgotPassword = async () => {
     const loginNameInput = prompt("Please enter your Login Name:");
     if (!loginNameInput) return;
+
+    if (!validateEnglishOnly(loginNameInput)) {
+      alert("Login name must use English characters only.");
+      return;
+    }
 
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const userIndex = users.findIndex(
@@ -161,19 +195,27 @@ const Login = ({ onLoginSuccess }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // 1. Check Login Name
-    if (checkLoginNameExists(regFormData.loginName)) {
-      alert("Login Name already exists. Please choose another.");
+    // 1. Check English-only Login Name
+    if (!validateEnglishOnly(regFormData.loginName)) {
+      setLoginNameError(
+        "Login Name can only use English characters, numbers, and symbols (_, ., -).",
+      );
       return;
     }
 
-    // 2. Check Password Complexity
+    // 2. Check Login Name Existence
+    if (checkLoginNameExists(regFormData.loginName)) {
+      setLoginNameError("Login Name already exists. Please choose another.");
+      return;
+    }
+
+    // 3. Check Password Complexity
     if (!validatePassword(regFormData.password)) {
       alert("Password does not meet security requirements.");
       return;
     }
 
-    // 3. Check Email Domain
+    // 4. Check Email Domain
     if (!validateEmail(regFormData.email)) {
       alert(
         "Invalid Email. Please use @iCloud, @gmail, @yahoo, @hotmail, or @outlook.",
@@ -211,16 +253,21 @@ const Login = ({ onLoginSuccess }) => {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="loginName">Login Name</label>
+            <label htmlFor="loginName">Login Name (English only)</label>
             <input
               type="text"
               id="loginName"
-              className="form-input"
+              className={`form-input ${loginFormError ? "input-error" : ""}`}
               placeholder="Enter login name"
               value={formData.loginName}
               onChange={handleChange}
               required
             />
+            {loginFormError && (
+              <p style={{ color: "red", fontSize: "11px", marginTop: "5px" }}>
+                {loginFormError}
+              </p>
+            )}
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
@@ -236,7 +283,11 @@ const Login = ({ onLoginSuccess }) => {
           </div>
 
           <div className="button-stack">
-            <button type="submit" className="btn btn-login">
+            <button 
+              type="submit" 
+              className="btn btn-login"
+              disabled={!!loginFormError}
+            >
               Sign In
             </button>
             <button
@@ -264,11 +315,27 @@ const Login = ({ onLoginSuccess }) => {
             <h3>Register New User</h3>
             <form onSubmit={handleRegister}>
               <div className="form-group">
-                <label>Login Name</label>
+                <label>
+                  Login Name (English letters, numbers, and _ . - only)
+                </label>
                 <input
                   type="text"
                   id="loginName"
-                  onChange={handleRegChange}
+                  value={regFormData.loginName}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    
+                    // Check if user typed non-English characters and update error state immediately
+                    if (value && !validateEnglishOnly(value)) {
+                      setLoginNameError(
+                        "Login name can only use English letters, numbers, and symbols (_, ., -)."
+                      );
+                    } else {
+                      setLoginNameError("");
+                    }
+
+                    handleRegChange(e);
+                  }}
                   className={`form-input ${loginNameError ? "input-error" : ""}`}
                   required
                 />
@@ -285,6 +352,7 @@ const Login = ({ onLoginSuccess }) => {
                 <input
                   type="text"
                   id="username"
+                  value={regFormData.username}
                   onChange={handleRegChange}
                   className="form-input"
                   required
@@ -297,6 +365,7 @@ const Login = ({ onLoginSuccess }) => {
                 <input
                   type="password"
                   id="password"
+                  value={regFormData.password}
                   onChange={handleRegChange}
                   className={`form-input ${passwordError ? "input-error" : ""}`}
                   required
@@ -314,6 +383,7 @@ const Login = ({ onLoginSuccess }) => {
                 <input
                   type="date"
                   id="dateOfBirth"
+                  value={regFormData.dateOfBirth}
                   onChange={handleRegChange}
                   className="form-input"
                   required
@@ -326,6 +396,7 @@ const Login = ({ onLoginSuccess }) => {
                 <input
                   type="email"
                   id="email"
+                  value={regFormData.email}
                   onChange={handleRegChange}
                   className="form-input"
                   placeholder="name@gmail.com"
