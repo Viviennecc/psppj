@@ -5,8 +5,8 @@ import SearchBar from "./components/SearchBar";
 import LibAppearance from "./LibAppearance";
 import BookDetailsModal from "./components/BookDetailsModal";
 import initialData from "./data/books.json";
-import "./LibrarySystem.css";
 import { useNavigate } from "react-router-dom";
+import "./LibrarySystem.css";
 
 // Image compression helper to stay under 5MB LocalStorage limit
 const compressImage = (base64Str, maxWidth = 1000) => {
@@ -26,6 +26,9 @@ const compressImage = (base64Str, maxWidth = 1000) => {
 };
 
 const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
+  // --- Initialize Hooks ---
+  const navigate = useNavigate();
+
   const [displayUserName, setDisplayUserName] = useState(propUserName);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -167,7 +170,7 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
       id: Date.now(),
       status: "Available",
       borrowedBy: null,
-      cover: "https://via.placeholder.com/150x200?text=No+Cover",
+      cover: "https://placeholder.com",
     };
 
     setBooks((prev) => [bookToAdd, ...prev]);
@@ -204,7 +207,7 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
     }
   };
 
-  // --- UPDATED FILTER LOGIC ---
+  // --- FILTER LOGIC ---
   const displayBooks = useMemo(() => {
     const lowerSearch = search.toLowerCase();
 
@@ -323,42 +326,14 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
             </h1>
           </div>
         </header>
-        <section className="lib-book-grid">
-          {displayBooks.length > 0 ? (
-            displayBooks.map((book) => (
-              <div
-                key={book.id}
-                className={`lib-card-wrapper ${isRemoveMode ? "shake" : ""}`}
-                onClick={() =>
-                  isRemoveMode
-                    ? handleRemoveBook(book.id)
-                    : setSelectedBook(book)
-                }
-              >
-                {isRemoveMode && <div className="lib-delete-badge">×</div>}
-                <BC
-                  book={book}
-                  onToggleStatus={(e) => {
-                    e.stopPropagation();
-                    if (!isRemoveMode) handleToggleBorrow(book.id);
-                  }}
-                />
-              </div>
-            ))
-          ) : (
-            <div className="lib-empty-msg">No books found in this section.</div>
-          )}
-        </section>
-      </main>
 
-      {showAddModal && (
-        <div
-          className="lib-modal-overlay"
-          onClick={() => setShowAddModal(false)}
-        >
-          <div className="lib-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="lib-modal-header">➕ Add New Book</div>
-            <form onSubmit={handleAddBook} className="lib-modal-body">
+        {showAddModal && (
+          <div
+            className="lib-modal-overlay"
+            onClick={() => setShowAddModal(false)}
+          >
+            <div className="lib-modal" onClick={(e) => e.stopPropagation()}>
+              ➕ Add New Book
               <input
                 required
                 className="lib-mac-input"
@@ -421,43 +396,44 @@ const LibrarySystem = ({ userName: propUserName = "Guest" }) => {
                   setNewBook({ ...newBook, description: e.target.value })
                 }
               />
-              <div className="lib-modal-footer">
-                <button
-                  type="button"
-                  className="lib-btn-secondary"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="lib-btn-primary">
-                  Save Book
-                </button>
-              </div>
-            </form>
+              <button
+                type="button"
+                className="lib-btn-secondary"
+                onClick={() => setShowAddModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="lib-btn-primary"
+                onClick={handleSaveBook}
+              >
+                Save Book
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <LibAppearance
-        show={showAppearance}
-        onClose={() => setShowAppearance(false)}
-        tempTextColor={tempTextColor}
-        setTempTextColor={setTempTextColor}
-        tempTextSize={tempTextSize}
-        setTempTextSize={setTempTextSize}
-        tempBgColor={tempBgColor}
-        setTempBgColor={setTempBgColor}
-        handleFileChange={handleFileChange}
-        handleFinalSave={handleFinalSave}
-        tempImageBase64={tempImageBase64}
-      />
-
-      <BookDetailsModal
-        selectedBook={selectedBook}
-        onClose={() => setSelectedBook(null)}
-        onToggleBorrow={handleToggleBorrow}
-        displayUserName={displayUserName}
-      />
+        <LibAppearance
+          show={showAppearance}
+          onClose={() => setShowAppearance(false)}
+          tempTextColor={tempTextColor}
+          setTempTextColor={setTempTextColor}
+          tempTextSize={tempTextSize}
+          setTempTextSize={setTempTextSize}
+          tempBgColor={tempBgColor}
+          setTempBgColor={setTempBgColor}
+          handleFileChange={handleFileChange}
+          handleFinalSave={handleFinalSave}
+          tempImageBase64={tempImageBase64}
+        />
+        <BookDetailsModal
+          selectedBook={selectedBook}
+          onClose={() => setSelectedBook(null)}
+          onToggleBorrow={handleToggleBorrow}
+          displayUserName={displayUserName}
+        />
+      </main>
     </div>
   );
 };
